@@ -1,0 +1,9 @@
+.ms-container {
+	position: fixed;
+	left: 110%;
+}
+
+.ms-default {
+	position: absolute;
+	left: 0%;
+}
