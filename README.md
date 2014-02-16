@@ -39,9 +39,9 @@ A simple, lightweight, and easy to use jQuery plugin which turns a single page i
 - Each function returns a boolean (true if default was succesfully changed or false if not).
 
 ``` javascript
-$.multi_screen.set_default_animation(String type, String command); takes in the animation type ('enter' or 'exit') and the animation command (must be valid).
-$.multi_screen.set_default_animation_time(String type, Int time); takes in the animation type ('enter' or 'exit') and the animation time (must be a valid integer).
-$.multi_screen.set_default_animation_delay(Boolean delay); takes in true or false to set the delay.
+$.multi_screen.set_default_animation(String type, String command); // takes in the animation type ('enter' or 'exit') and the animation command (must be valid).
+$.multi_screen.set_default_animation_time(String type, Int time); // takes in the animation type ('enter' or 'exit') and the animation time (must be a valid integer).
+$.multi_screen.set_default_animation_delay(Boolean delay) // takes in true or false to set the delay.
 ```
 
 ## Installation
