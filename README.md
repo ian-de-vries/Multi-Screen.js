@@ -1,4 +1,4 @@
-Multi-Screen.js v1.3.0
+Multi-Screen.js v1.0.1
 ===============
 
 A simple, lightweight, and easy to use jQuery plugin which turns a single page into a collection of screens with animated navigation.
