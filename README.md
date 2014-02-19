@@ -39,14 +39,15 @@ A simple, lightweight, and easy to use jQuery plugin which turns a single page i
 - Each function returns a boolean (true if default was succesfully changed or false if not).
 
 ``` javascript
-$.multi_screen.set_default_animation(String type, String command); // takes in the animation type ('enter' or 'exit') and the animation command (must be valid).
-$.multi_screen.set_default_animation_time(String type, Int time); // takes in the animation type ('enter' or 'exit') and the animation time (must be a valid integer).
-$.multi_screen.set_default_animation_delay(Boolean delay) // takes in true or false to set the delay.
+MultiScreen.set_default_animation(String type, String command); // takes in the animation type ('enter' or 'exit') and the animation command (must be valid).
+MultiScreen.set_default_animation_time(String type, Int time); // takes in the animation type ('enter' or 'exit') and the animation time (must be a valid integer).
+MultiScreen.set_default_animation_delay(Boolean delay) // takes in true or false to set the delay.
 ```
 
 ## Installation
 - Download the latest version and extract the Multi-Screen JS and CSS files.
 - Link the JS and CSS files in the <head> tag of your page (or copy and paste the styles into your own stylesheet).
+- Call the ```MultiScreen.init()``` function in your JavaScript code (or do it like the example below).
 
 ``` html
 <head>
@@ -54,5 +55,6 @@ $.multi_screen.set_default_animation_delay(Boolean delay) // takes in true or fa
         <link href="multi-screen-css.css" type="text/css" rel="stylesheet"/>
         <script type="text/javascript" src="http://code.jquery.com/jquery-latest.pack.js"></script>
         <script type="text/javascript" src="multi-screen.js"></script>
+        <script type="text/javascript">$(document).ready(function() { MultiScreen.init(); });</script>
 </head>
 ```
