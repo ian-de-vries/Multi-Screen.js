@@ -1,7 +1,7 @@
 Multi-Screen.js v1.3.0
 ===============
 
-A simple, lightweight, and easy to use jQuery plugin which turns a single page into a collection of screens with animated naviagion.
+A simple, lightweight, and easy to use jQuery plugin which turns a single page into a collection of screens with animated navigation.
 
 ## Setting up your page
 - Divide up the ```<body>``` of your HTML into ```<div>``` elements, giving them all the ```ms-container``` class (the plugin needs at least two to run), and build each screen inside. 
@@ -56,10 +56,14 @@ MultiScreen.set_default_animation_delay(Boolean delay);
 
 ``` html
 <head>
-        <title>My Page</title>
-        <link href="multi-screen-css.css" type="text/css" rel="stylesheet"/>
+        <!-- latest jQuery -->
         <script type="text/javascript" src="http://code.jquery.com/jquery-latest.pack.js"></script>
+
+        <!-- link the css and js scripts -->
+        <link href="multi-screen-css.css" type="text/css" rel="stylesheet"/>
         <script type="text/javascript" src="multi-screen.js"></script>
+        
+        <!-- run the plugin -->
         <script type="text/javascript">$(document).ready(function() { MultiScreen.init(); });</script>o
 </head>
 ```
