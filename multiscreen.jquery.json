@@ -1,0 +1,27 @@
+{
+	"name": "multiscreen",
+	"title": "Multi-Screen.js",
+	"description": "A simple jQuery plugin which turns a single page into a collection of screens with animated navigation.",
+	"version": "1.0.1",
+	"keywords": [
+        "tabs",
+        "animation",
+        "navigation"
+    ],
+	"author": {
+		"name": "Ian de Vries",
+		"url": "http://www.ian-devries.com",
+		"email": "ian@ian-devries.com"
+	},
+	"homepage": "http://www.ian-devries.com/multiscreenjs/",
+	"bugs": "https://github.com/ian-de-vries/Multi-Screen.js/issues",
+	"docs": "https://github.com/ian-de-vries/Multi-Screen.js",
+	"demo": "http://www.ian-devries.com/multiscreenjs/",
+	"licenses": [{
+		"type": "MIT",
+		"url": "http://www.opensource.org/licenses/mit-license.php"
+	}],
+	"dependencies": {
+		"jquery": ">=1.0"
+	}
+}
