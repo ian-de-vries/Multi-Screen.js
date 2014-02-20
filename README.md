@@ -64,6 +64,6 @@ MultiScreen.set_default_animation_delay(Boolean delay);
         <script type="text/javascript" src="multi-screen.js"></script>
         
         <!-- run the plugin -->
-        <script type="text/javascript">$(document).ready(function() { MultiScreen.init(); });</script>o
+        <script type="text/javascript">$(document).ready(function() { MultiScreen.init(); });</script>
 </head>
 ```
