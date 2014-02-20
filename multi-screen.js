@@ -7,10 +7,10 @@
 var MultiScreen = (function() {
 
 	/**
-	 * screens_ref
+	 * screens
 	 * Holds references to all the screens
 	 */
-	var screens_ref;
+	var screens;
 
 	/**
 	 * lock_navigation
@@ -61,10 +61,10 @@ var MultiScreen = (function() {
 	var init = function() {
 
 		// all multi-screen.js screens
-		var screens = $('div.ms-container');
+		var ms_screens = $('div.ms-container');
 
 		// run plugin only if at least two screens
-		if (screens.length > 1) {
+		if (ms_screens.length > 1) {
 
 			// check for default screen
 			var default_screen = $('div.ms-container.ms-default');
@@ -73,7 +73,7 @@ var MultiScreen = (function() {
 			if (default_screen.length == 0) {
 				
 				// use top container, give it the ms-default class
-				default_screen = $(screens[0]);
+				default_screen = $(ms_screens[0]);
 				default_screen.toggleClass('ms-default');
 			
 			// if more than one default	
@@ -89,7 +89,7 @@ var MultiScreen = (function() {
 			current_screen = default_screen;
 
 			// store the screens for navigation between them
-			store_screens(screens);
+			store_screens(ms_screens);
 
 			// open the navigation, activate the links
 			lock_navigation = false;
@@ -186,16 +186,16 @@ var MultiScreen = (function() {
 	 * Takes in a jquery selection of the active screens and stores them associatively, indexed by id
 	 * @param {Object} screens
 	 */
-	var store_screens = function (screens) {
+	var store_screens = function (screens_to_store) {
 
-		screens_ref = new Object();
+		screens = new Object();
 
 		// for each screen, store if it has a valid id 
-		$(screens).each(function() {
+		$(screens_to_store).each(function() {
 
 			if (typeof $(this).attr('id') !== 'undefined') {
 		
-				screens_ref[$(this).attr('id')] = this;
+				screens[$(this).attr('id')] = this;
 
 			}
 		
@@ -212,9 +212,9 @@ var MultiScreen = (function() {
 	var get_target_screen = function (id) {
 
 		// return the screen if the id is not empty and the by that id screen exists, false otherwise
-		if (typeof id !== 'undefined' && id in screens_ref) {
+		if (typeof id !== 'undefined' && id in screens) {
 			
-			return $(screens_ref[id]);
+			return $(screens[id]);
 			
 		} else {
 		
