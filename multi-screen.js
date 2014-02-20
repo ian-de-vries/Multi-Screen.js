@@ -1,5 +1,5 @@
 /**
- * Multi-Screen.js
+ * Multi-Screen.js v1.0.1
  * @author Ian de Vries <ian@ian-devries.com>
  * @license MIT License <http://opensource.org/licenses/MIT>
  */
@@ -728,7 +728,8 @@ var MultiScreen = (function() {
 	};
 
 	// public functions
-	return {init: init, set_default_animation: set_default_animation, 
+	return {init: init, 
+			set_default_animation: set_default_animation, 
 			set_default_animation_time: set_default_animation_time,
 			set_default_animation_delay: set_default_animation_delay};
 
