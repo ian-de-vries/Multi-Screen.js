@@ -43,7 +43,7 @@ A simple, lightweight, and easy to use jQuery plugin which turns a single page i
 MultiScreen.set_default_animation(String type, String command);
 
 // takes in the animation type ('enter' or 'exit') and the time command (must be and integer)
-MultiScreen.set_default_animation_time(String type, Int time);
+MultiScreen.set_default_animation_time(String type, Integer time);
 
 // takes in true or false to set the delay.
 MultiScreen.set_default_animation_delay(Boolean delay);
