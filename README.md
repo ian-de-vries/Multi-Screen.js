@@ -84,22 +84,23 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 ## Setting default values
 Multi-Screen.js makes it easy to change the defaults for the animations, their times, the distance between the entering and exiting screens, and whether the animations should occur synchronously or asynchronously. The functions below each return a boolean (true if default was succesfully changed or false if not).
 
-- `MultiScreen.set_default_animation(String command, String type)` Sets the default animation; <br/> 
-`command` must be a valid animation command; <br/>
-(OPTIONAL) `type` must be 'enter' or 'exit'.
-- `MultiScreen.set_default_time(Number time, String type)` Sets the default animation time in milliseconds;<br/>
-`time` must be a valid integer greater than 0;<br/>
-(OPTIONAL) `type` must be 'enter' or 'exit'.
-- `MultiScreen.set_default_distance(Number distance, String dimension)` Sets the default distance between the edge of the entering and exiting screens in pixels;<br/>
-`distance` must be a valid integer (can be negative);<br/>
-(OPTIONAL) `dimension` must be 'vertical' or 'horizontal'.
-- `MultiScreen.set_default_delay(Boolean delay)` Sets the default delay between the enter and exit animations; <br/>
-`delay` must be a boolean.
-- `MultiScreen.set_defaults(Object options)` Sets the defaults by property;<br/>
-`options` must be an object containing a value for each property to set (see below).
+- `MultiScreen.set_default_animation(String command, String type)` Sets the default animation;
+    - `command` must be a valid animation command;
+    - `type` must be 'enter' or 'exit' (OPTIONAL).
+- `MultiScreen.set_default_time(Number time, String type)` Sets the default animation time in milliseconds;
+    - `time` must be a valid integer greater than 0;
+    - `type` must be 'enter' or 'exit' (OPTIONAL).
+- `MultiScreen.set_default_distance(Number distance, String dimension)` Sets the default distance between the edge of the entering and exiting screens in pixels;
+    - `distance` must be a valid integer (can be negative);
+    - `dimension` must be 'vertical' or 'horizontal' (OPTIONAL).
+- `MultiScreen.set_default_delay(Boolean delay)` Sets the default delay between the enter and exit animations;
+    - `delay` must be a boolean.
+- `MultiScreen.set_defaults(Object options)` Sets the defaults by property;
+    - `options` must be an object containing a value for each property to set (see below).
 
 You can also set the defaults by passing an object with properties into the `init' function when initializing the plugin:
-- `MultiScreen.init(Object options)` <br/> Initializes the plugin; OPTIONAL: `options` must be an object containing a value for each property to set (see below).
+- `MultiScreen.init(Object options)` Initializes the plugin; 
+    - `options` must be an object containing a value for each property to set (see below) (OPTIONAL).
 
 ### Using an object to set the defaults
 
