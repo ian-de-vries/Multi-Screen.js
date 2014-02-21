@@ -1,4 +1,4 @@
-Multi-Screen.js v1.0.1
+Multi-Screen.js v1.1.0
 ===============
 
 A simple, lightweight, and easy to use jQuery plugin which turns a single page into a collection of screens with animated navigation.
@@ -33,9 +33,6 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 - `data-ms-horizontal-distance`: horizontal distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
 - `data-ms-delay`: wait for the exit animation to finish before starting the enter animation (synchronous vs. asynchronous), must be `true` or `false`
 
-### Valid animation commands
-The valid animation commands are `fade`, `top`, `topright`, `right`, `bottomright`, `bottom`, `bottomleft`, `left`, `topleft`, `fadetop`, `fadetopright`, `faderight`, `fadebottomright`, `fadebottom`, `fadebottomleft`, `fadeleft`, and `fadetopleft`.
-
 ``` html
 <!-- default animations -->
 <a class="ms-nav-link" data-ms-target="welcome" href="#">link</a>
@@ -45,6 +42,25 @@ The valid animation commands are `fade`, `top`, `topright`, `right`, `bottomrigh
 <a class="ms-nav-link" data-ms-target="welcome" data-ms-exit-time="700" data-ms-enter-time="300" href="#">link</a>
 <a class="ms-nav-link" data-ms-target="welcome" data-ms-delay="true" href="#">link</a>
 ```
+
+### Valid animation commands
+- `fade`
+- `top`
+- `topright`
+- `right`
+- `bottomright`
+- `bottom`
+- `bottomleft`
+- `left`
+- `topleft`
+- `fadetop`
+- `fadetopright`
+- `faderight`
+- `fadebottomright`
+- `fadebottom`
+- `fadebottomleft`
+- `fadeleft`
+- `fadetopleft`
 
 ## Installation
 - Download the latest version and extract the Multi-Screen JS and CSS files.
@@ -68,11 +84,19 @@ The valid animation commands are `fade`, `top`, `topright`, `right`, `bottomrigh
 ## Setting default values
 Multi-Screen.js makes it easy to change the defaults for the animations, their times, the distance between the entering and exiting screens, and whether the animations should occur synchronously or asynchronously. The functions below each return a boolean (true if default was succesfully changed or false if not).
 
-- `MultiScreen.set_default_animation(String command, String type)` <br/> Sets the default animation; `command` must be a valid animation command; OPTIONAL: `type` must be 'enter' or 'exit'.
-- `MultiScreen.set_default_time(Number time, String type)` <br/> Sets the default animation time in milliseconds; `time` must be a valid integer greater than 0; OPTIONAL: `type` must be 'enter' or 'exit'.
-- `MultiScreen.set_default_distance(Number distance, String dimension)` <br/> Sets the default distance between the edge of the entering and exiting screens in pixels; `distance` must be a valid integer (can be negative); OPTIONAL: `dimension` must be 'vertical' or 'horizontal'.
-- `MultiScreen.set_default_delay(Boolean delay)` <br/> Sets the default delay between the enter and exit animations; `delay` must be a boolean.
-- `MultiScreen.set_defaults(Object options)` <br/> Sets the defaults by property; `options` must be an object containing a value for each property to set (see below).
+- `MultiScreen.set_default_animation(String command, String type)` Sets the default animation; <br/> 
+`command` must be a valid animation command; <br/>
+(OPTIONAL) `type` must be 'enter' or 'exit'.
+- `MultiScreen.set_default_time(Number time, String type)` Sets the default animation time in milliseconds;<br/>
+`time` must be a valid integer greater than 0;<br/>
+(OPTIONAL) `type` must be 'enter' or 'exit'.
+- `MultiScreen.set_default_distance(Number distance, String dimension)` Sets the default distance between the edge of the entering and exiting screens in pixels;<br/>
+`distance` must be a valid integer (can be negative);<br/>
+(OPTIONAL) `dimension` must be 'vertical' or 'horizontal'.
+- `MultiScreen.set_default_delay(Boolean delay)` Sets the default delay between the enter and exit animations; <br/>
+`delay` must be a boolean.
+- `MultiScreen.set_defaults(Object options)` Sets the defaults by property;<br/>
+`options` must be an object containing a value for each property to set (see below).
 
 You can also set the defaults by passing an object with properties into the `init' function when initializing the plugin:
 - `MultiScreen.init(Object options)` <br/> Initializes the plugin; OPTIONAL: `options` must be an object containing a value for each property to set (see below).
