@@ -1,5 +1,5 @@
 /**
- * Multi-Screen.js v1.0.1
+ * Multi-Screen.js v1.1.0
  * @author Ian de Vries <ian@ian-devries.com>
  * @license MIT License <http://opensource.org/licenses/MIT>
  */
@@ -55,10 +55,23 @@ var MultiScreen = (function() {
 	var default_delay;
 
 	/**
+	 * default_distance_buffer_top
+	 * Default for the distance between the top and bottom anchorpoints of the screens while animating
+	 */
+	var default_distance_buffer_vertical;
+
+	/**
+	 * default_distance_buffer_bottom
+	 * Default for the distance between the left and right anchorpoints of the screens while animating
+	 */
+	var default_distance_buffer_horizontal;
+
+	/**
 	 * init()
+	 * @param {Object} options may contain default settings (optional)
 	 * Initializes the plugin
 	 */
-	var init = function() {
+	var init = function(options) {
 
 		// all multi-screen.js screens
 		var ms_screens = $('div.ms-container');
@@ -90,6 +103,9 @@ var MultiScreen = (function() {
 
 			// store the screens for navigation between them
 			store_screens(ms_screens);
+
+			// store the default settings if given
+			set_defaults(options);
 
 			// open the navigation, activate the links
 			lock_navigation = false;
@@ -125,15 +141,37 @@ var MultiScreen = (function() {
 					// store the switched in target as the current screen
 					current_screen = target;
 
-					// gather the animation commands if set
-					var exit_str = link.attr('data-ms-exit'),
-						enter_str = link.attr('data-ms-enter'),
+					// gather the animation commands
+					var command_str = link.attr('data-ms-animation');
+						exit_str = link.attr('data-ms-exit-animation'),
+						enter_str = link.attr('data-ms-enter-animation'),
+
+					// time commands
+						time_str = link.attr('data-ms-time');
 						exit_time_str = link.attr('data-ms-exit-time'),
 						enter_time_str = link.attr('data-ms-enter-time'),
-						delay = link.attr('data-ms-delay');
+
+					// delay
+						delay = link.attr('data-ms-delay'),
+
+					// screen distance buffer
+						buffer = link.attr('data-ms-distance'),
+						vertical_buffer = link.attr('data-ms-vertical-distance'),
+						horizontal_buffer = link.attr('data-ms-horizontal-distance');
+
+					// use higher level command if more specific not set
+					// if higher level command is undefined it will be defaulted later
+					exit_str = (typeof exit_str === 'undefined') ? command_str : exit_str;
+					enter_str = (typeof enter_str === 'undefined') ? command_str : enter_str;
+
+					exit_time_str = (typeof exit_time_str === 'undefined') ? time_str : exit_time_str;
+					enter_time_str = (typeof enter_time_str === 'undefined') ? time_str : enter_time_str;
+
+					vertical_buffer = (typeof vertical_buffer === 'undefined') ? buffer : vertical_buffer;
+					horizontal_buffer = (typeof horizontal_buffer === 'undefined') ? buffer : horizontal_buffer;
 
 					// run the animation
-					run_animation(current, target, enter_str, enter_time_str, exit_str, exit_time_str, delay);
+					run_animation(current, target, enter_str, enter_time_str, exit_str, exit_time_str, delay, vertical_buffer, horizontal_buffer);
 				
 				// undefined target or equal to current screen
 				} else {
@@ -158,7 +196,7 @@ var MultiScreen = (function() {
 	var get_switch_time = function (time_str, type) {
 
 		// if the input is valid
-		if ($.isNumeric(time_str) && Math.floor(time_str) == time_str) {
+		if (check_int(time_str)) {
 			
 			// return int value of input
 			return parseInt(time_str);
@@ -234,28 +272,43 @@ var MultiScreen = (function() {
 	 * @param {String} exit_str command for exit animation
 	 * @param {String} exit_time_str command for exit animation speed
 	 * @param {String} delay command for the delay
+	 * @param {String} vertical_buffer
+	 * @param {String} horizontal_buffer
 	 */
-	var run_animation = function (current, target, enter_str, enter_time_str, exit_str, exit_time_str, delay) {
+	var run_animation = function (current, target, enter_str, enter_time_str, exit_str, exit_time_str, delay, vertical_buffer, horizontal_buffer) {
 
-		// determine height and width to use based on the max of the entering screen, exiting screen, or the window
-		var	max_height = Math.max.apply(Math, [current.outerHeight(), target.outerHeight(), $(window).height()]),
-			max_width = Math.max.apply(Math, [current.outerWidth(), target.outerWidth(), $(window).width()]),
+		// check for valid command or take the default
+		enter_str = check_animation_command(enter_str) ? enter_str : get_default_animation('enter');
+		exit_str = check_animation_command(exit_str) ? exit_str : get_default_animation('exit');
 
-		// gather the css to use on the target and current screens in the animation
-			target_css = get_target_css(enter_str, max_height, max_width),
-			current_css = get_current_css(exit_str, max_height, max_width);
+		var enter_fade = false,
+			exit_fade = false;
 
-		// if no delay or an invalid delay was specified, use the default
-		if (typeof delay === 'undefined' || (delay.toLowerCase() !== 'true' && delay.toLowerCase() !== 'false')) {
+		// if the first part or the entire command is fade, add the CSS elements for the fade
+		// continue with the rest of the command (either a direction or empty)
+		if (enter_str.substring(0, 4) === 'fade') {
 
-			delay = get_default_delay();
-
-		} else {
-
-			// change type to boolean
-			delay = delay.toLowerCase() === 'true';
+			enter_fade = true;
+			enter_str = enter_str.substring(4);
 
 		}
+
+		if (exit_str.substring(0, 4) === 'fade') {
+
+			exit_fade = true;
+			exit_str = exit_str.substring(4);
+
+		}
+
+		// get the starting/ending anchor points
+		var movement = get_movement(current.outerHeight(), target.outerHeight(), current.outerWidth(), target.outerHeight(), enter_str, exit_str, vertical_buffer, horizontal_buffer);
+
+		// gather the css to use on the target and current screens in the animation
+		var target_css = get_target_css(movement.enter.x, movement.enter.y, enter_fade),
+			current_css = get_current_css(movement.exit.x, movement.exit.y, exit_fade);
+
+		// if no delay or an invalid delay was specified, use the default, otherwise turn it into boolean type
+		delay = (typeof delay === 'undefined' || (delay.toLowerCase() !== 'true' && delay.toLowerCase() !== 'false')) ? get_default_delay() : (delay.toLowerCase() === 'true');
 
 		// if a delay is specified, run the target animation inside the complete function of the current animation, outside otherwise
 		if (delay) {
@@ -322,65 +375,97 @@ var MultiScreen = (function() {
 	};
 
 	/**
-	 * get_coordinate(input_str, dimension, movement) 
-	 * Returns the x and y coordinates for the target/current css (starting/ending points)
-	 * @param {String} input_str command
-	 * @param {String} dimension 'x' or 'y'
-	 * @param {Integer} width or height
-	 * @return {Mixed} x or y movement, false if bad input
+	 * get_movement(current_height, target_height, current_width, target_width, enter_str, exit_str)
+	 * Returns the movement to use in the x and y direction
+	 * @param {Integer} current_height
+	 * @param {Integer} target_height
+	 * @param {Integer} current_width
+	 * @param {Integer} target_width
+	 * @param {String} enter_str enter command
+	 * @param {String} exit_str exit command
+	 * @param {Integer} vertical_buffer
+	 * @param {Integer} horizontal_buffer
+	 * @return {Object} x and y movement for both enter and exit
 	 */
-	var get_coordinate = function (input_str, dimension, movement) {
+	var get_movement = function (current_height, target_height, current_width, target_width, enter_str, exit_str, vertical_buffer, horizontal_buffer) {
 
-		movement = (movement + 200) + 'px';
+		vertical_buffer = check_int(vertical_buffer) ? parseInt(vertical_buffer) : get_default_distance_buffer('x');
+		horizontal_buffer = check_int(horizontal_buffer) ? parseInt(horizontal_buffer) : get_default_distance_buffer('y');
 
-		// x-dimension
-		if (dimension === 'x') {
+		// if the screen is entering anywhere from the left, the target width is relevant
+		if (enter_str === 'topleft' || enter_str === 'left' || enter_str === 'bottomleft') {
 
-			// anywhere to the left
-			if (input_str === 'topleft' || input_str === 'left' || input_str === 'bottomleft') {
+			var x_movement = Math.max(target_width, $(window).width()) + horizontal_buffer;
 
-				return '-' + movement;
-
-			// anywhere to the right
-			} else if (input_str === 'topright' || input_str === 'right' || input_str === 'bottomright') {
-
-				return movement;
-
-			// in the middle
-			} else {
-
-				return '0';
-
-			}
-
-		// y-dimension
-		} else if (dimension === 'y') {
-
-			// anywhere at the top
-			if (input_str === 'topleft' || input_str === 'top' || input_str === 'topright') {
-
-				return '-' + movement;
-
-			// anywhere at the bottom
-			} else if (input_str === 'bottomleft' || input_str === 'bottom' || input_str === 'bottomright') {
-
-				return movement;
-
-			// anwhere in the middle
-			} else {
-
-				return '0';
-
-			}
-
-		// bad input
 		} else {
 
-			return false;
+			var x_movement = Math.max(current_width, $(window).width()) + horizontal_buffer;
 
 		}
 
+		// if the screen is entering from the top, the target height is relevant
+		if (enter_str === 'topleft' || enter_str === 'top' || enter_str === 'topright') {
+
+			var y_movement = Math.max(target_height, $(window).height()) + vertical_buffer;
+
+		} else {
+
+			var y_movement = Math.max(current_height, $(window).height()) + vertical_buffer;
+
+		}
+
+		return {enter: get_coordinate(x_movement, y_movement, enter_str),
+				exit: get_coordinate(x_movement, y_movement, exit_str)}
+
 	};
+
+	/**
+	 * get_coordinate(x_movement, y_movement, input_str)
+	 * Returns the movement to use in the x and y direction
+	 * @param {Integer} x_movement
+	 * @param {Integer} y_movement
+	 * @param {String} input_str command
+	 * @return {Object} x and y movement
+	 */
+	var get_coordinate = function (x_movement, y_movement, input_str) {
+
+		// anywhere to the left
+		if (input_str === 'topleft' || input_str === 'left' || input_str === 'bottomleft') {
+
+			x_movement = '-' + x_movement + 'px';
+
+		// anywhere to the right
+		} else if (input_str === 'topright' || input_str === 'right' || input_str === 'bottomright') {
+
+			x_movement = x_movement + 'px';
+
+		// anywhere in the middle
+		} else {
+
+			x_movement = '0';
+
+		}
+
+		// anywhere at the top
+		if (input_str === 'topleft' || input_str === 'top' || input_str === 'topright') {
+
+			y_movement = '-' + y_movement + 'px';
+
+		// anywhere at the bottom
+		} else if (input_str === 'bottomleft' || input_str === 'bottom' || input_str === 'bottomright') {
+
+			y_movement = y_movement + 'px';
+
+		// anwhere in the middle
+		} else {
+
+			y_movement = '0';
+
+		}
+
+		return {x: x_movement, y: y_movement};
+
+	}
 
 	/**
 	 * check_animation_command(command)
@@ -390,7 +475,7 @@ var MultiScreen = (function() {
 	 */
 	var check_animation_command = function (command) {
 
-		// check for each individual command - might be able to micro optimize here
+		// check for each individual command - this should be micro optimized
 		if (command !== 'fade' &&
 			command !== 'top' && 
 			command !== 'topright' && 
@@ -421,21 +506,26 @@ var MultiScreen = (function() {
 	};
 
 	/**
-	 * get_target_css = function (input_str, height, width)
-	 * determines the pre, animate, and post CSS for the target (entering) screen, uses default animation if bad input
-	 * @param {String} input_str command
-	 * @param {Integer} height
-	 * @param {Integer} width
+	 * check_int(in)
+	 * checks if the incoming string is a valid integer value
+	 * @param {Mixed} check
+	 * @return {Boolean} it's an integer
+	 */
+	var check_int = function (check) {
+
+		return ($.isNumeric(check) && Math.floor(check) == check);
+
+	}
+
+	/**
+	 * get_target_css(x_movement, y_movement, fade)
+	 * determines the pre, animate, and post CSS for the target (entering) screen
+	 * @param {String} x_movement
+	 * @param {String} y_movement
+	 * @param {Boolean} fade
 	 * @return {Object} pre_css, animate_css, post_css
 	 */
-	var get_target_css = function (input_str, height, width) {
-
-		// check for valid command or take the default
-		if (!check_animation_command(input_str)) {
-
-			input_str = get_default_animation('enter');
-
-		}
+	var get_target_css = function (x_movement, y_movement, fade) {
 
 		// instantiate the return parts with the shared components of each command
 		var post_css = {position: 'absolute', zIndex: '2'},
@@ -443,20 +533,17 @@ var MultiScreen = (function() {
 			animate_css = {};
 
 		// if the first part or the entire command is fade, add the CSS elements for the fade
-		if (input_str.substring(0, 4) === 'fade') {
+		if (fade === true) {
 
 			// opacity goes from 0 to 1
 			pre_css.opacity = '0';
 			animate_css.opacity = '1';
 
-			// continue with the rest of the command (either a direction or empty)
-			input_str = input_str.substring(4);
-
 		}
 
 		// get the x and y movement based on the command
-		pre_css.left = get_coordinate(input_str, 'x', width);
-		pre_css.top = get_coordinate(input_str, 'y', height);
+		pre_css.left = x_movement;
+		pre_css.top = y_movement;
 
 		// if the screen starts at the top or bottom, it must animate to the middle
 		if (pre_css.top !== '0') {
@@ -478,21 +565,14 @@ var MultiScreen = (function() {
 	};
 
 	/**
-	 * get_current_css = function (input_str, height, width)
-	 * determines the pre, animate, and post CSS for the current (exiting) screen, uses default animation if bad input
+	 * get_current_css(x_movement, y_movement, fade)
+	 * determines the pre, animate, and post CSS for the current (exiting) screen
 	 * @param {String} input_str command
 	 * @param {Integer} height
 	 * @param {Integer} width
 	 * @return {Object} pre_css, animate_css, post_css
 	 */
-	var get_current_css = function (input_str, height, width) {
-
-		// check for valid command or take the default
-		if (!check_animation_command(input_str)) {
-
-			input_str = get_default_animation('exit');
-
-		}
+	var get_current_css = function (x_movement, y_movement, fade) {
 
 		// instantiate the return parts with the shared components of each command
 		var post_css = {display: 'none'},
@@ -500,20 +580,17 @@ var MultiScreen = (function() {
 			animate_css = {};
 
 		// if the first part or the entire command is fade, add the CSS elements for the fade
-		if (input_str.substring(0, 4) === 'fade') {
+		if (fade === true) {
 
 			// opacity goes from 1 to 0, then set back to 1 after the animation
 			animate_css.opacity = '0';
 			post_css.opacity = '1';
 
-			// continue with the rest of the command (either a direction or empty)
-			input_str = input_str.substring(4);
-
 		}
 
 		// get the x and y movement based on the command
-		animate_css.left = get_coordinate(input_str, 'x', width);
-		animate_css.top = get_coordinate(input_str, 'y', height);
+		animate_css.left = x_movement;
+		animate_css.top = y_movement;
 
 		// for fade, put the screen in the back after the animation - before otherwise
 		if (animate_css.top === '0' && animate_css.left === '0') {
@@ -564,7 +641,7 @@ var MultiScreen = (function() {
 		if (!check_animation_command(default_animation)) {
 
 			default_animation = 'fade';
-			set_default_animation(type, default_animation);
+			set_default_animation(default_animation, type);
 
 		}
 
@@ -579,7 +656,7 @@ var MultiScreen = (function() {
 	 * @return {Mixed} default animation time, or false if bad input
 	 */
 	var get_default_time = function (type) {
-
+ 
 		var default_time;
 
 		// for the enter animation
@@ -600,14 +677,50 @@ var MultiScreen = (function() {
 		}
 
 		// if the default is not set or invalid, set it to 500
-		if (!($.isNumeric(default_time) && Math.floor(default_time) == default_time)) {
+		if (!check_int(default_time)) {
 
 			default_time = 500;
-			set_default_animation_time(type, default_time);
+			set_default_time(default_time, type);
 
 		}
 
 		return default_time;
+
+	};
+
+	/**
+	 * get_default_distance_buffer(dimension) 
+	 * Gets the default distance buffer if preset, defaults it to 200px if not set yet
+	 * @param {String} dimension 'x' or 'y'
+	 * @return {Mixed} default distance buffer, or false if bad input
+	 */
+	var get_default_distance_buffer = function (dimension) {
+
+		var default_buffer;
+
+		if (dimension === 'x') {
+
+			default_buffer = default_distance_buffer_horizontal;
+
+		} else if (dimension === 'y') {
+
+			default_buffer = default_distance_buffer_vertical;
+
+		} else {
+
+			return false;
+
+		}
+
+		// if the default is not set or invalid, set it to 200
+		if (!check_int(default_buffer)) {
+
+			default_buffer = 200;
+			set_default_distance(default_buffer, (dimension === 'x' ? 'horizontal' : 'vertical'));
+
+		}
+
+		return default_buffer;
 
 	};
 
@@ -621,7 +734,7 @@ var MultiScreen = (function() {
 		// if the default delay is not set or invalid
 		if (typeof default_delay !== 'boolean') {
 
-			set_default_animation_delay(false);
+			set_default_delay(false);
 
 		}
 
@@ -632,11 +745,11 @@ var MultiScreen = (function() {
 	/**
 	 * set_default_animation(type, command)
 	 * Sets the default animation for exiting and entering screens
-	 * @param {String} type 'enter' or 'exit'
 	 * @param {String} command animation command to set
+	 * @param {String} type 'enter' or 'exit'
 	 * @return {Boolean} success
 	 */
-	var set_default_animation = function (type, command) {
+	var set_default_animation = function (command, type) {
 
 		// check for valid command
 		if (check_animation_command(command)) {
@@ -649,6 +762,12 @@ var MultiScreen = (function() {
 			// set exit default
 			} else if (type === 'exit') {
 
+				default_exit_animation = command;
+
+			// no input given, so do both
+			} else if (typeof type === 'undefined') {
+
+				default_enter_animation = command;
 				default_exit_animation = command;
 
 			// bad input
@@ -668,26 +787,32 @@ var MultiScreen = (function() {
 	};
 
 	/**
-	 * set_default_animation_time(type, time)
+	 * set_default_time(type, time)
 	 * Sets the default animation time for exiting and entering screens
-	 * @param {String} type 'enter' or 'exit'
 	 * @param {Integer} time animation time command to set
+	 * @param {String} type 'enter' or 'exit'
 	 * @return {Boolean} success
 	 */
-	var set_default_animation_time = function (type, time) {
+	var set_default_time = function (time, type) {
 
 		// check if input time is valid
-		if ($.isNumeric(time) && Math.floor(time) == time) {
+		if (check_int(time) && (time = parseInt(time)) > 0) {
 
 			// set enter time default
 			if (type === 'enter') {
 			
-				default_enter_time = parseInt(time);
+				default_enter_time = time;
 
 			// set exit time default
 			} else if (type === 'exit') {
 
-				default_exit_time = parseInt(time);
+				default_exit_time = time;
+
+			// no input given, so do both
+			} else if (typeof type === 'undefined') {
+
+			 	default_enter_time = time;
+				default_exit_time = time;
 
 			// bad input
 			} else {
@@ -706,12 +831,58 @@ var MultiScreen = (function() {
 	};
 
 	/**
-	 * set_default_animation_delay(delay)
+	 * set_default_distance(dimension, distance)
+	 * Sets the default distance buffer for exiting and entering screens
+	 * @param {Integer} distance in pixels
+	 * @param {String} dimension 'horizontal' or 'vertical'
+	 * @return {Boolean} success
+	 */
+	var set_default_distance = function (distance, dimension) {
+
+		// check if input time is valid
+		if (check_int(distance)) {
+
+			// set horizontal buffer
+			if (dimension === 'horizontal') {
+			
+				default_distance_buffer_horizontal = parseInt(distance);
+
+			// set vertical buffer
+			} else if (dimension === 'vertical') {
+
+				default_distance_buffer_vertical = parseInt(distance);
+
+			// no input given, so do both
+			} else if (typeof dimension === 'undefined') {
+
+				distance = parseInt(distance);
+				default_distance_buffer_horizontal = distance;
+				default_distance_buffer_vertical = distance;
+
+
+			// bad input
+			} else {
+
+				return false;
+
+			}
+
+		// bad input
+		} else {
+
+			return false;
+
+		}
+
+	};
+
+	/**
+	 * set_default_delay(delay)
 	 * Sets the default animation delay
 	 * @param {Boolean} delay
 	 * @return {Boolean} success
 	 */
-	var set_default_animation_delay = function (delay) {
+	var set_default_delay = function (delay) {
 
 		if (typeof delay === 'boolean') {
 
@@ -727,10 +898,106 @@ var MultiScreen = (function() {
 
 	};
 
+	/**
+	 * set_defaults(options)
+	 * Sets the defaults
+	 * @param {Object} options
+	 * @return {Boolean} success
+	 */
+	var set_defaults = function (options) {
+
+		// store the default settings if given
+		if (typeof options !== 'undefined') {
+
+			var check_bool = true;
+
+			// check for a general animation time
+			if (typeof options.default_time !== 'undefined') {
+
+				check_bool = !set_default_time(options.default_time) ? false : check_bool;
+
+			} 
+
+			// check for enter animation time
+			if (typeof options.default_enter_time !== 'undefined') {
+
+				check_bool = !set_default_time(options.default_enter_time, 'enter') ? false : check_bool;
+
+			} 
+
+			// check for exit animation time
+			if (typeof options.default_exit_time !== 'undefined') {
+
+				check_bool = !set_default_time(options.default_exit_time, 'exit') ? false : check_bool;
+
+			} 
+
+			// check for animation command
+			if (typeof options.default_animation !== 'undefined') {
+
+				check_bool = !set_default_animation(options.default_animation) ? false : check_bool;
+
+			} 
+
+			// check for enter animation command
+			if (typeof options.default_enter_animation !== 'undefined') {
+
+				check_bool = !set_default_animation(options.default_enter_animation, 'enter') ? false : check_bool;
+
+			}
+
+			// check for exit animation command
+			if (typeof options.default_exit_animation !== 'undefined') {
+
+				check_bool = !set_default_animation(options.default_exit_animation, 'exit') ? false : check_bool;
+
+			}
+
+			// check for delay
+			if (typeof options.default_delay !== 'undefined') {
+
+				check_bool = !set_default_delay(options.default_delay) ? false : check_bool;
+
+			}
+
+			// check for distance
+			if (typeof options.default_distance !== 'undefined') {
+
+				check_bool = !set_default_distance(options.default_distance) ? false : check_bool;
+
+			}
+
+			// check for vertical distance
+			if (typeof options.default_vertical_distance !== 'undefined') {
+
+				check_bool = !set_default_distance(options.default_vertical_distance, 'vertical') ? false : check_bool;
+
+			}
+
+			// check for horizontal distance
+			if (typeof options.default_vertical_distance !== 'undefined') {
+
+				check_bool = !set_default_distance(options.default_vertical_distance, 'vertical') ? false : check_bool;
+
+			}
+
+			return check_bool;
+
+		// bad input
+		} else {
+
+			return false;
+
+		}
+
+	}
+
 	// public functions
 	return {init: init, 
 			set_default_animation: set_default_animation, 
-			set_default_animation_time: set_default_animation_time,
-			set_default_animation_delay: set_default_animation_delay};
+			set_default_time: set_default_time,
+			set_default_delay: set_default_delay,
+			set_default_distance: set_default_distance,
+			set_defaults: set_defaults};
 
 })();

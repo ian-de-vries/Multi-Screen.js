@@ -4,9 +4,9 @@ Multi-Screen.js v1.0.1
 A simple, lightweight, and easy to use jQuery plugin which turns a single page into a collection of screens with animated navigation.
 
 ## Setting up your page
-- Divide up the ```<body>``` of your HTML into ```<div>``` elements, giving them all the ```ms-container``` class (the plugin needs at least two to run), and build each screen inside. 
-- Give the element you want as your default screen the class ```ms-default```. If no default is specified, the top ```ms-container``` will be used, and if more than one default is found the top ```ms-default``` will be used.
-- To facilitate navigation between screens, each one requires a unique ```id``` attribute.
+- Divide up the `<body>` of your HTML into `<div>` elements, giving them all the `ms-container` class (the plugin needs at least two to run), and build each screen inside. 
+- Give the element you want as your default screen the class `ms-default`. If no default is specified, the top `ms-container` will be used, and if more than one default is found the top `ms-default` will be used.
+- To facilitate navigation between screens, each one requires a unique `id` attribute.
 
 ``` html
 <body>
@@ -20,39 +20,36 @@ A simple, lightweight, and easy to use jQuery plugin which turns a single page i
 ```
 
 ## Build Navigation
-- To switch from one screen to another, simply give the class ```ms-nav-link``` to anything you can click on, and specify which screen to swap in for the current one by setting the ```data-ms-target``` attribute equal to its ```id```.
-- You can specify the enter and exit animations using the ```data-ms-enter``` and ```data-ms-exit``` attributes. The valid commands are ```fade```, ```top```, ```topright```, ```right```, ```bottomright```, ```bottom```, ```bottomleft```, ```left```, ```topleft```, ```fadetop```, ```fadetopright```, ```faderight```, ```fadebottomright```, ```fadebottom```, ```fadebottomleft```, ```fadeleft```, and ```fadetopleft```. The default is ```fade```.
-- You can also specify the animation time in miliseconds using the ```data-ms-enter-time``` and ```data-ms-exit-time``` attributes, which take in a valid integer value, and specify if the animations should occur synchronously or in sequence with the ```data-ms-delay``` attribute, which takes in true or false. The defaults are 500 miliseconds and false (no delay).
+To switch from one screen to another, simply give the class `ms-nav-link` to anything you can click on, and specify which screen to swap in for the current one by with its `id`. To define settings for the animation, the plugin recognizes the following attributes, and more specific attributes override less specific ones:
+- `data-ms-target`: (REQUIRED) the target screen, must be the `id` of another screen
+- `data-ms-animaton`: enter and exit animation, must be a valid animation command (see below)
+- `data-ms-enter-animation`: enter animation, must be a valid animation command (see below)
+- `data-ms-exit-animation`: exit animation, mist be a valid animation command (see below)
+- `data-ms-time`: enter and exit animation time in miliseconds, must be a valid integer greater than 0
+- `data-ms-enter-time`: enter animation time in miliseconds, must be a valid integer greater than 0
+- `data-ms-exit-time`: exit animation time in miliseconds, must be a valid integer greater than 0
+- `data-ms-distance`: horizontal and vertical distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
+- `data-ms-vertical-distance`: vertical distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
+- `data-ms-horizontal-distance`: horizontal distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
+- `data-ms-delay`: wait for the exit animation to finish before starting the enter animation (synchronous vs. asynchronous), must be `true` or `false`
+
+### Valid animation commands
+The valid animation commands are `fade`, `top`, `topright`, `right`, `bottomright`, `bottom`, `bottomleft`, `left`, `topleft`, `fadetop`, `fadetopright`, `faderight`, `fadebottomright`, `fadebottom`, `fadebottomleft`, `fadeleft`, and `fadetopleft`.
 
 ``` html
 <!-- default animations -->
 <a class="ms-nav-link" data-ms-target="welcome" href="#">link</a>
  
 <!-- specific animations -->
-<a class="ms-nav-link" data-ms-target="welcome" data-ms-exit="fadeleft" data-ms-enter="right" href="#">link</a>
+<a class="ms-nav-link" data-ms-target="welcome" data-ms-animation="fadeleft" data-ms-vertical-distance="0" href="#">link</a>
 <a class="ms-nav-link" data-ms-target="welcome" data-ms-exit-time="700" data-ms-enter-time="300" href="#">link</a>
 <a class="ms-nav-link" data-ms-target="welcome" data-ms-delay="true" href="#">link</a>
-```
-
-## Setting default values
-- Multi-Screen.js makes it easy to change the defaults for the animations, their times, and the delay, through the jQuery functions below.
-- Each function returns a boolean (true if default was succesfully changed or false if not).
-
-``` javascript
-// takes in the animation type ('enter' or 'exit') and the animation command (must be valid)
-MultiScreen.set_default_animation(String type, String command);
-
-// takes in the animation type ('enter' or 'exit') and the time command (must be an integer)
-MultiScreen.set_default_animation_time(String type, Number time);
-
-// takes in true or false to set the delay.
-MultiScreen.set_default_animation_delay(Boolean delay);
 ```
 
 ## Installation
 - Download the latest version and extract the Multi-Screen JS and CSS files.
 - Link the JS and CSS files in the <head> tag of your page (or copy and paste the styles into your own stylesheet).
-- Call the ```MultiScreen.init()``` function in your JavaScript code (or do it like the example below).
+- Call the `MultiScreen.init()` function in your JavaScript code (or do it like the example below).
 
 ``` html
 <head>
@@ -67,3 +64,41 @@ MultiScreen.set_default_animation_delay(Boolean delay);
         <script type="text/javascript">$(document).ready(function() { MultiScreen.init(); });</script>
 </head>
 ```
+
+## Setting default values
+Multi-Screen.js makes it easy to change the defaults for the animations, their times, the distance between the entering and exiting screens, and whether the animations should occur synchronously or asynchronously. The functions below each return a boolean (true if default was succesfully changed or false if not).
+
+- `MultiScreen.set_default_animation(String command, String type)` <br/> Sets the default animation; `command` must be a valid animation command; OPTIONAL: `type` must be 'enter' or 'exit'.
+- `MultiScreen.set_default_time(Number time, String type)` <br/> Sets the default animation time in milliseconds; `time` must be a valid integer greater than 0; OPTIONAL: `type` must be 'enter' or 'exit'.
+- `MultiScreen.set_default_distance(Number distance, String dimension)` <br/> Sets the default distance between the edge of the entering and exiting screens in pixels; `distance` must be a valid integer (can be negative); OPTIONAL: `dimension` must be 'vertical' or 'horizontal'.
+- `MultiScreen.set_default_delay(Boolean delay)` <br/> Sets the default delay between the enter and exit animations; `delay` must be a boolean.
+- `MultiScreen.set_defaults(Object options)` <br/> Sets the defaults by property; `options` must be an object containing a value for each property to set (see below).
+
+You can also set the defaults by passing an object with properties into the `init' function when initializing the plugin:
+- `MultiScreen.init(Object options)` <br/> Initializes the plugin; OPTIONAL: `options` must be an object containing a value for each property to set (see below).
+
+### Using an object to set the defaults
+
+The plugin recognizes the following properties to set the defaults when passed in through an object:
+
+``` js
+var options = {
+    default_animation:              // must be a valid animation command
+    default_enter_animation:        // must be a valid animation command, overrides default_animation
+    default_exit_animation:         // must be a valid animation command, overrides default_animation
+    default_time:                   // milliseconds, must be an integer greater than 0
+    default_enter_time:             // milliseconds, must be an integer greater than 0, overrides default_time
+    default_exit_time:              // milliseconds, must be an integer greater than 0, overrides default_time
+    default_distance:               // pixels, must be an integer (can be negative)
+    default_vertical_distance:      // pixels, must be an integer (can be negative), overrides default_distance
+    default_horizontal_distance:    // pixels, must be an integer (can be negative), overrides default_distance
+    default_delay:                  // must be a boolean
+}
+```
+
+### Initial defaults
+
+- default animation: `fade`
+- default time: `500`
+- default distance: `200`
+- default delay: `false`
