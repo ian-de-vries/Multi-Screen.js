@@ -28,9 +28,9 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 - `data-ms-time`: enter and exit animation time in miliseconds, must be a valid integer greater than 0
 - `data-ms-enter-time`: enter animation time in miliseconds, must be a valid integer greater than 0
 - `data-ms-exit-time`: exit animation time in miliseconds, must be a valid integer greater than 0
-- `data-ms-distance`: horizontal and vertical distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
-- `data-ms-vertical-distance`: vertical distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
-- `data-ms-horizontal-distance`: horizontal distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
+- `data-ms-distance`: horizontal and vertical starting distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
+- `data-ms-vertical-distance`: vertical starting distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
+- `data-ms-horizontal-distance`: horizontal starting distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
 - `data-ms-delay`: wait for the exit animation to finish before starting the enter animation (synchronous vs. asynchronous), must be `true` or `false`
 
 ``` html
@@ -82,7 +82,7 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 ```
 
 ## Setting default values
-Multi-Screen.js makes it easy to change the defaults for the animations, their times, the distance between the entering and exiting screens, and whether the animations should occur synchronously or asynchronously. The functions below each return a boolean (true if default was succesfully changed or false if not).
+Multi-Screen.js makes it easy to change the defaults for the animations, their times, the starting distance between the entering and exiting screens, and whether the animations should occur synchronously or asynchronously. The functions below each return a boolean (true if default was succesfully changed or false if not).
 
 - `MultiScreen.set_default_animation(String command, String type)` Sets the default animation;
     - `command` must be a valid animation command;
@@ -90,7 +90,7 @@ Multi-Screen.js makes it easy to change the defaults for the animations, their t
 - `MultiScreen.set_default_time(Number time, String type)` Sets the default animation time in milliseconds;
     - `time` must be a valid integer greater than 0;
     - `type` must be 'enter' or 'exit' (OPTIONAL).
-- `MultiScreen.set_default_distance(Number distance, String dimension)` Sets the default distance between the edge of the entering and exiting screens in pixels;
+- `MultiScreen.set_default_distance(Number distance, String dimension)` Sets the default starting distance between the edge of the entering and exiting screens in pixels;
     - `distance` must be a valid integer (can be negative);
     - `dimension` must be 'vertical' or 'horizontal' (OPTIONAL).
 - `MultiScreen.set_default_delay(Boolean delay)` Sets the default delay between the enter and exit animations;
