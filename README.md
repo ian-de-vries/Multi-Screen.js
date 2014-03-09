@@ -89,18 +89,14 @@ Multi-Screen.js makes it easy to change the defaults for the animations, their t
 - `MultiScreen.set_default_animation(String command, String type)` Sets the default animation;
     - `command` must be a valid animation command;
     - `type` must be 'enter' or 'exit' (OPTIONAL).
-
 - `MultiScreen.set_default_time(Number time, String type)` Sets the default animation time in milliseconds;
     - `time` must be a valid integer greater than 0;
     - `type` must be 'enter' or 'exit' (OPTIONAL).
-
 - `MultiScreen.set_default_distance(Number distance, String dimension)` Sets the default starting distance between the edge of the entering and exiting screens in pixels;
     - `distance` must be a valid integer (can be negative);
     - `dimension` must be 'vertical' or 'horizontal' (OPTIONAL).
-
 - `MultiScreen.set_default_delay(Boolean delay)` Sets the default delay between the enter and exit animations;
     - `delay` must be a boolean.
-
 - `MultiScreen.set_defaults(Object options)` Sets the defaults by property;
     - `options` must be an object containing a value for each property to set (see below).
 
