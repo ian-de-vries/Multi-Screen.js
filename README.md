@@ -20,7 +20,7 @@ A simple, lightweight, and easy to use jQuery plugin which turns a single page i
 ```
 
 ## Build Navigation
-To switch from one screen to another, simply give the class `ms-nav-link` to anything you can click on, and specify which screen to swap in for the current one by with its `id`. To define settings for the animation, the plugin recognizes the following attributes, and more specific attributes override less specific ones:
+To switch from one screen to another, simply give the class `ms-nav-link` to anything you can click on, and specify which screen to swap in for the current one by setting the target equal to its `id`. To define settings for the animation, the plugin recognizes the following attributes, and more specific attributes override less specific ones:
 - `data-ms-target`: (REQUIRED) the target screen, must be the `id` of another screen
 - `data-ms-animaton`: enter and exit animation, must be a valid animation command (see below)
 - `data-ms-enter-animation`: enter animation, must be a valid animation command (see below)
