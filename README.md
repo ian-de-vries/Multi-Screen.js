@@ -66,7 +66,7 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 
 ## Installation
 - Download the latest version and extract the Multi-Screen JS and CSS files.
-- Link the JS and CSS files in the <head> tag of your page (or copy and paste the styles into your own stylesheet).
+- Link the JS and CSS files in the `<head>` of your page (or copy and paste the styles into your own stylesheet).
 - Call the `MultiScreen.init()` function in your JavaScript code (or do it like the example below).
 
 ``` html
@@ -84,7 +84,7 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 ```
 
 ## Setting default values
-Multi-Screen.js makes it easy to change the defaults for the animations, their times, the starting distance between the entering and exiting screens, and whether the animations should occur synchronously or asynchronously. The functions below each return a boolean (true if default was succesfully changed or false if not).
+Multi-Screen.js makes it easy to change the defaults for the animations, their times, the starting distance between the entering and exiting screens, and whether the animations should occur synchronously or asynchronously. The functions below each return a boolean (`true` if default was succesfully changed or `false` if not).
 
 - `MultiScreen.set_default_animation(String command, String type)` Sets the default animation;
     - `command` must be a valid animation command;
