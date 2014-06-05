@@ -1,4 +1,4 @@
-Multi-Screen.js v1.1.0
+Multi-Screen.js v1.2.0
 ===============
 
 A simple, lightweight, and easy to use jQuery plugin which turns a single page into a collection of screens with animated navigation.
@@ -25,9 +25,10 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 - `data-ms-animaton`: enter and exit animation, must be a valid animation command (see below)
 - `data-ms-enter-animation`: enter animation, must be a valid animation command (see below)
 - `data-ms-exit-animation`: exit animation, mist be a valid animation command (see below)
-- `data-ms-time`: enter and exit animation time in miliseconds, must be a valid integer greater than 0
-- `data-ms-enter-time`: enter animation time in miliseconds, must be a valid integer greater than 0
-- `data-ms-exit-time`: exit animation time in miliseconds, must be a valid integer greater than 0
+- `data-ms-time`: enter and exit animation time in milliseconds, must be a valid integer greater than 0
+- `data-ms-enter-time`: enter animation time in milliseconds, must be a valid integer greater than 0
+- `data-ms-exit-time`: exit animation time in milliseconds, must be a valid integer greater than 0
+- `data-ms-scroll-time`: time in milliseconds spent scrolling up before animating if the page is not at the top , must be a valid integer greater than 0 (if 0 is input, the screen will snap to the top instead of scrolling)
 - `data-ms-distance`: horizontal and vertical starting distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
 - `data-ms-vertical-distance`: vertical starting distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
 - `data-ms-horizontal-distance`: horizontal starting distance between the edge of the entering and exiting screens, must be a valid integer (can be negative)
@@ -37,12 +38,12 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 
 ``` html
 <!-- default animations -->
-<a class="ms-nav-link" data-ms-target="welcome" href="#">link</a>
+<a class="ms-nav-link" data-ms-target="welcome" href="javascript:void(0)">link</a>
  
 <!-- specific animations -->
-<a class="ms-nav-link" data-ms-target="welcome" data-ms-animation="fadeleft" data-ms-vertical-distance="0" href="#">link</a>
-<a class="ms-nav-link" data-ms-target="welcome" data-ms-exit-time="700" data-ms-enter-time="300" href="#">link</a>
-<a class="ms-nav-link" data-ms-target="welcome" data-ms-delay="true" href="#">link</a>
+<a class="ms-nav-link" data-ms-target="welcome" data-ms-animation="fadeleft" data-ms-vertical-distance="0" href="javascript:void(0)">link</a>
+<a class="ms-nav-link" data-ms-target="welcome" data-ms-exit-time="700" data-ms-enter-time="300" href="javascript:void(0)">link</a>
+<a class="ms-nav-link" data-ms-target="welcome" data-ms-delay="true" href="javascript:void(0)">link</a>
 ```
 
 ### Valid animation commands
@@ -63,6 +64,48 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 - `fadebottomleft`
 - `fadeleft`
 - `fadetopleft`
+
+## Navigating within your own JavaScript code
+You can also navigate between screens within your own custom JavaScript code using the switch_screens function:
+
+- `MultiScreen.switch_screens(Object options)` Navigates from the current screen to a target specified in the options;
+    - `options` contains the target screen (REQUIRED) and animation commands (OPTIONAL) (see below);
+    - Returns `true` if the animation was succesfully started, `false` if not.
+
+To specify the animation you want, the function recognizes the following properties in the options object:
+
+``` js
+var options = {	
+    target_id:                  // id of the target screen (REQUIRED)
+    animation_command:          // must be a valid animation command
+	enter_animation_command:    // must be a valid animation command
+	exit_animation_command:     // must be a valid animation command
+	animation_time:             // milliseconds, must be an integer greater than 0
+	enter_animation_time:       // milliseconds, must be an integer greater than 0
+	exit_animation_time:        // milliseconds, must be an integer greater than 0
+	scroll_time:                // milliseconds, must be an integer greater than 0
+	delay:                      // must be a boolean
+	distance:                   // pixels, must be an integer (can be negative)
+	vertical_distance:          // pixels, must be an integer (can be negative), overrides distance
+	horizontal_distance:        // pixels, must be an integer (can be negative), overrides distance
+}
+```
+
+### Example manual navigation code
+
+The JavaScript code below will take the input from a textbox with the id `screen-input` and try to navigate to the given screen when a user clicks on a button with the id `navigate` (with the default animation settings). If the animation did was not initiated (because the screen does not exist, or an animation is already in progress) it will alert with an error:
+
+``` js
+$('#navigate').click(function() {
+
+   if (!MultiScreen.switch_screens({target_id: $('#screen-input').val()})) {
+   
+        alert('Navigation failed!');
+   
+   }
+
+});
+```
 
 ## Installation
 - Download the latest version and extract the Multi-Screen JS and CSS files.
@@ -91,7 +134,7 @@ Multi-Screen.js makes it easy to change the defaults for the animations, their t
     - `type` must be 'enter' or 'exit' (OPTIONAL).
 - `MultiScreen.set_default_time(Number time, String type)` Sets the default animation time in milliseconds;
     - `time` must be a valid integer greater than 0;
-    - `type` must be 'enter' or 'exit' (OPTIONAL).
+    - `type` must be 'enter' or 'exit' or 'scroll' (OPTIONAL).
 - `MultiScreen.set_default_distance(Number distance, String dimension)` Sets the default starting distance between the edge of the entering and exiting screens in pixels;
     - `distance` must be a valid integer (can be negative);
     - `dimension` must be 'vertical' or 'horizontal' (OPTIONAL).
@@ -114,6 +157,7 @@ var options = {
     default_enter_animation:        // must be a valid animation command, overrides default_animation
     default_exit_animation:         // must be a valid animation command, overrides default_animation
     default_time:                   // milliseconds, must be an integer greater than 0
+    default_scroll_time:            // milliseconds, must be an integer greater than or equal to 0
     default_enter_time:             // milliseconds, must be an integer greater than 0, overrides default_time
     default_exit_time:              // milliseconds, must be an integer greater than 0, overrides default_time
     default_distance:               // pixels, must be an integer (can be negative)
@@ -126,6 +170,7 @@ var options = {
 ### Initial defaults
 
 - default animation: `fade`
-- default time: `500`
+- default animation time: `500`
+- default scroll time: `200`
 - default distance: `200`
 - default delay: `false`
