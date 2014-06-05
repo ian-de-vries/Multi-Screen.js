@@ -93,7 +93,7 @@ var options = {
 
 ### Example manual navigation code
 
-The JavaScript code below will take the input from a textbox with the id `screen-input` and try to navigate to the given screen when a user clicks on a button with the id `navigate` (with the default animation settings). If the animation did was not initiated (because the screen does not exist, or an animation is already in progress) it will alert with an error:
+The JavaScript code below will take the input from a textbox with the id `screen-input` and try to navigate to the given screen when a user clicks on a button with the id `navigate` (with the default animation settings). If the animation was not initiated (because the screen does not exist, or an animation is already in progress) it will alert with an error:
 
 ``` js
 $('#navigate').click(function() {
