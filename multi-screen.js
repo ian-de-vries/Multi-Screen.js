@@ -1,5 +1,5 @@
 /**
- * Multi-Screen.js v1.1.0
+ * Multi-Screen.js v1.2.0
  * @author Ian de Vries <ian@ian-devries.com>
  * @license MIT License <http://opensource.org/licenses/MIT>
  */
@@ -67,9 +67,37 @@ var MultiScreen = (function() {
 	var default_distance_buffer_horizontal;
 
 	/**
+	 * default_scroll_time
+	 * Default for the animation time for scrolling to the top of the page (before the screen switch animation)
+	 */
+	var default_scroll_time;
+
+	/**
+	 * valid_commands
+	 * List of all valid animation commands
+	 */
+	var valid_commands = [	'fade', 
+							'fadetop', 
+							'fadetopright', 
+							'faderight', 
+							'fadebottomright', 
+							'fadebottom', 
+							'fadebottomleft', 
+							'fadeleft', 
+							'fadetopleft', 
+							'top', 
+							'topright', 
+							'right', 
+							'bottomright', 
+							'bottom', 
+							'bottomleft', 
+							'left', 
+							'topleft' ];
+
+	/**
 	 * init()
-	 * @param {Object} options may contain default settings (optional)
 	 * Initializes the plugin
+	 * @param {Object} options may contain default settings (optional)
 	 */
 	var init = function(options) {
 
@@ -83,7 +111,7 @@ var MultiScreen = (function() {
 			var default_screen = $('div.ms-container.ms-default');
 			
 			// if no default screen specified
-			if (default_screen.length == 0) {
+			if (default_screen.length === 0) {
 				
 				// use top container, give it the ms-default class
 				default_screen = $(ms_screens[0]);
@@ -123,80 +151,129 @@ var MultiScreen = (function() {
 
 		// attach to all ms-nav-link elements
 		$('.ms-nav-link').click(function(node) {
-			
-			// only do something if not already busy
-			if (lock_navigation === false) {
-			
-				// lock screen switching until current switch is finished
-				lock_navigation = true;
-		
-				// get references to the target and the current screens
-				var link = $(node.target),
-					target = get_target_screen(link.attr('data-ms-target')),
-					current = current_screen;
-					
-				// only do something if the target exists and is not equal to the current screen	
-				if (target !== false && target[0] !== current[0]) {
-				
-					// store the switched in target as the current screen
-					current_screen = target;
 
-					// gather the animation commands
-					var command_str = link.attr('data-ms-animation');
-						exit_str = link.attr('data-ms-exit-animation'),
-						enter_str = link.attr('data-ms-enter-animation'),
+			// grab the node that was clicked on containing all the information
+			var link = $(node.target);
 
-					// time commands
-						time_str = link.attr('data-ms-time');
-						exit_time_str = link.attr('data-ms-exit-time'),
-						enter_time_str = link.attr('data-ms-enter-time'),
-
-					// delay
-						delay = link.attr('data-ms-delay'),
-
-					// screen distance buffer
-						buffer = link.attr('data-ms-distance'),
-						vertical_buffer = link.attr('data-ms-vertical-distance'),
-						horizontal_buffer = link.attr('data-ms-horizontal-distance');
-
-					// use higher level command if more specific not set
-					// if higher level command is undefined it will be defaulted later
-					exit_str = (typeof exit_str === 'undefined') ? command_str : exit_str;
-					enter_str = (typeof enter_str === 'undefined') ? command_str : enter_str;
-
-					exit_time_str = (typeof exit_time_str === 'undefined') ? time_str : exit_time_str;
-					enter_time_str = (typeof enter_time_str === 'undefined') ? time_str : enter_time_str;
-
-					vertical_buffer = (typeof vertical_buffer === 'undefined') ? buffer : vertical_buffer;
-					horizontal_buffer = (typeof horizontal_buffer === 'undefined') ? buffer : horizontal_buffer;
-
-					// run the animation
-					run_animation(current, target, enter_str, enter_time_str, exit_str, exit_time_str, delay, vertical_buffer, horizontal_buffer);
-				
-				// undefined target or equal to current screen
-				} else {
-				
-					lock_navigation = false;
-					
-				}
-				
-			}
+			// call the switch function with the animation specifics
+			switch_screens({	target_id: link.attr('data-ms-target'),
+								animation_command: link.attr('data-ms-animation'), 
+								enter_animation_command: link.attr('data-ms-enter-animation'),
+								exit_animation_command: link.attr('data-ms-exit-animation'),
+								animation_time: link.attr('data-ms-time'),
+								enter_animation_time: link.attr('data-ms-enter-time'),
+								exit_animation_time: link.attr('data-ms-exit-time'),
+								delay: link.attr('data-ms-delay'),
+								distance: link.attr('data-ms-distance'),
+								vertical_distance: link.attr('data-ms-vertical-distance'),
+								horizontal_distance: link.attr('data-ms-horizontal-distance'),
+								scroll_time: link.attr('data-ms-scroll-time')});
 		
 		});
 
 	};
 
 	/**
+	 * switch_screens(options)
+	 * Public api function to navigate from the current screen to the specified target screen
+	 * @param {Object} options contains the parameters for navigation from the current to a target screen
+	 * @return Boolean animation was succesfully started
+	 */
+	var switch_screens = function (options) {
+
+		// only do something if not already busy
+		if (lock_navigation === false) {
+
+			// lock screen switching until current switch is finished
+			lock_navigation = true;
+
+			// get references to the target and the current screens
+			var target = get_target_screen(options.target_id),
+				current = current_screen;
+
+			// only do something if the target exists and is not equal to the current screen	
+			if (target !== false && target[0] !== current[0]) {
+
+				// store the switched in target as the current screen
+				current_screen = target;
+
+				// use higher level command if more specific not set
+				// if higher level command is undefined it will be defaulted later
+				options.exit_animation_command = (typeof options.exit_animation_command === 'undefined') ? options.animation_command : options.exit_animation_command;
+				options.enter_animation_command = (typeof options.enter_animation_command === 'undefined') ? options.animation_command : options.enter_animation_command;
+
+				options.exit_animation_time = (typeof options.exit_animation_time === 'undefined') ? options.animation_time : options.exit_animation_time;
+				options.enter_animation_time = (typeof options.enter_animation_time === 'undefined') ? options.animation_time : options.enter_animation_time;
+
+				options.vertical_distance = (typeof options.vertical_distance === 'undefined') ? options.distance : options.vertical_distance;
+				options.horizontal_distance = (typeof options.horizontal_distance === 'undefined') ? options.distance : options.horizontal_distance;
+
+				// if the page is currently not at the top
+				if ($(document).scrollTop() > 0) {
+
+					// scroll it to the top (for smoother screen switch animation)
+					$('body').animate({scrollTop: 0}, get_switch_time(options.scroll_time, 'scroll'), function() {
+
+						// then run the animation on completion
+						run_animation(	current, 
+										target, 
+										options.enter_animation_command, 
+										options.enter_animation_time, 
+										options.exit_animation_command, 
+										options.exit_animation_time, 
+										options.delay, 
+										options.vertical_distance, 
+										options.horizontal_distance);
+
+					});
+
+				// at the top already, so animate without scrolling first
+				} else {
+
+					run_animation(	current, 
+									target, 
+									options.enter_animation_command, 
+									options.enter_animation_time, 
+									options.exit_animation_command, 
+									options.exit_animation_time, 
+									options.delay, 
+									options.vertical_distance, 
+									options.horizontal_distance);
+
+				}
+
+				return true;
+
+
+			// undefined target or equal to current screen
+			} else {
+			
+				lock_navigation = false;
+				return false;
+				
+			}
+
+
+		// already busy
+		} else {
+
+			return false;
+
+		}
+
+	}
+
+	/**
 	 * get_switch_time(time_str, type)
 	 * Determines the event time of the animated screenswitching in ms
 	 * @param {String} time_str
-	 * @param {String} type 'enter' or 'exit'
+	 * @param {String} type 'enter' or 'exit' or 'scroll'
 	 * @return {Integer} switch time
 	 */
 	var get_switch_time = function (time_str, type) {
 
 		// if the input is valid
-		if (check_int(time_str)) {
+		if (check_int(time_str) && time_str >= 0) {
 			
 			// return int value of input
 			return parseInt(time_str);
@@ -205,7 +282,7 @@ var MultiScreen = (function() {
 		} else {
 		
 			// return default by type if valid
-			if (type === 'enter' || type === 'exit') {
+			if (type === 'enter' || type === 'exit' || type === 'scroll') {
 
 				return get_default_time(type);
 
@@ -476,30 +553,13 @@ var MultiScreen = (function() {
 	var check_animation_command = function (command) {
 
 		// check for each individual command - this should be micro optimized
-		if (command !== 'fade' &&
-			command !== 'top' && 
-			command !== 'topright' && 
-			command !== 'right' && 
-			command !== 'bottomright' && 
-			command !== 'bottom' && 
-			command !== 'bottomleft' && 
-			command !== 'left' && 
-			command !== 'topleft' &&
-			command !== 'fadetop' && 
-			command !== 'fadetopright' && 
-			command !== 'faderight' && 
-			command !== 'fadebottomright' && 
-			command !== 'fadebottom' && 
-			command !== 'fadebottomleft' && 
-			command !== 'fadeleft' && 
-			command !== 'fadetopleft'
-			) {
+		if (valid_commands.indexOf(command) !== -1) {
 
-			return false;
+			return true;
 
 		} else {
 
-			return true;
+			return false;
 
 		}
 
@@ -669,6 +729,11 @@ var MultiScreen = (function() {
 			
 			default_time = default_exit_time;
 
+		// for the exit animation
+		} else if (type === 'scroll') {
+			
+			default_time = default_scroll_time;
+
 		// bad input
 		} else {
 
@@ -679,7 +744,7 @@ var MultiScreen = (function() {
 		// if the default is not set or invalid, set it to 500
 		if (!check_int(default_time)) {
 
-			default_time = 500;
+			default_time = type === 'scroll' ? 200 : 500;
 			set_default_time(default_time, type);
 
 		}
@@ -790,7 +855,7 @@ var MultiScreen = (function() {
 	 * set_default_time(type, time)
 	 * Sets the default animation time for exiting and entering screens
 	 * @param {Integer} time animation time command to set
-	 * @param {String} type 'enter' or 'exit'
+	 * @param {String} type 'enter' or 'exit' or 'scroll'
 	 * @return {Boolean} success
 	 */
 	var set_default_time = function (time, type) {
@@ -808,11 +873,17 @@ var MultiScreen = (function() {
 
 				default_exit_time = time;
 
+			// set exit time default
+			} else if (type === 'scroll') {
+
+				default_scroll_time = time;
+
 			// no input given, so do both
 			} else if (typeof type === 'undefined') {
 
 			 	default_enter_time = time;
 				default_exit_time = time;
+				default_scroll_time = time;
 
 			// bad input
 			} else {
@@ -930,6 +1001,13 @@ var MultiScreen = (function() {
 
 				check_bool = !set_default_time(options.default_exit_time, 'exit') ? false : check_bool;
 
+			}
+
+			// check for scroll time
+			if (typeof options.default_scroll_time !== 'undefined') {
+
+				check_bool = !set_default_time(options.default_scroll_time, 'scroll') ? false : check_bool;
+
 			} 
 
 			// check for animation command
@@ -993,11 +1071,12 @@ var MultiScreen = (function() {
 	}
 
 	// public functions
-	return {init: init, 
-			set_default_animation: set_default_animation, 
-			set_default_time: set_default_time,
-			set_default_delay: set_default_delay,
-			set_default_distance: set_default_distance,
-			set_defaults: set_defaults};
+	return {	init: init, 
+				set_default_animation: set_default_animation, 
+				set_default_time: set_default_time,
+				set_default_delay: set_default_delay,
+				set_default_distance: set_default_distance,
+				set_defaults: set_defaults,
+				switch_screens: switch_screens};
 
 })();
