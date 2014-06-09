@@ -174,3 +174,7 @@ var options = {
 - default scroll time: `200`
 - default distance: `200`
 - default delay: `false`
+
+## Usage disclaimer
+
+This software is free to use and edit by anyone for any purpose. If you use this plugin, I would love it if you dropped me a line and let me know what you used it for (www.ian-devries.com/?page=contact). Comments, notes for improvement, and ideas for new features are also always welcome.
