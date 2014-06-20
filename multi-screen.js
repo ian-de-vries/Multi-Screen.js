@@ -384,8 +384,12 @@ var MultiScreen = (function() {
 		var target_css = get_target_css(movement.enter.x, movement.enter.y, enter_fade),
 			current_css = get_current_css(movement.exit.x, movement.exit.y, exit_fade);
 
-		// if no delay or an invalid delay was specified, use the default, otherwise turn it into boolean type
-		delay = (typeof delay === 'undefined' || (delay.toLowerCase() !== 'true' && delay.toLowerCase() !== 'false')) ? get_default_delay() : (delay.toLowerCase() === 'true');
+		// if no delay or an invalid delay was specified, use the default, otherwise make sure it's boolean type
+		if (typeof delay !== 'boolean') {
+
+			delay = (typeof delay !== 'string' || (delay.toLowerCase() !== 'true' && delay.toLowerCase() !== 'false')) ? get_default_delay() : (delay.toLowerCase() === 'true');
+
+		}
 
 		// if a delay is specified, run the target animation inside the complete function of the current animation, outside otherwise
 		if (delay) {
