@@ -1,5 +1,5 @@
 /**
- * Multi-Screen.js v1.2.0
+ * Multi-Screen.js v1.2.1
  * @author Ian de Vries <ian@ian-devries.com>
  * @license MIT License <http://opensource.org/licenses/MIT>
  */
@@ -73,6 +73,12 @@ var MultiScreen = (function() {
 	var default_scroll_time;
 
 	/**
+	 * animation_queue
+	 * Contains the queue object for chaining animations
+	 */
+	var animation_queue;
+
+	/**
 	 * valid_commands
 	 * List of all valid animation commands
 	 */
@@ -137,6 +143,7 @@ var MultiScreen = (function() {
 
 			// open the navigation, activate the links
 			lock_navigation = false;
+			animation_queue = false;
 			activate_links();
 			
 		}
@@ -176,7 +183,7 @@ var MultiScreen = (function() {
 	/**
 	 * switch_screens(options)
 	 * Public api function to navigate from the current screen to the specified target screen
-	 * @param {Object} options contains the parameters for navigation from the current to a target screen
+	 * @param {Object} options contains the parameters for navigation from the current to a target screen (see readme)
 	 * @return Boolean animation was succesfully started
 	 */
 	var switch_screens = function (options) {
@@ -196,6 +203,12 @@ var MultiScreen = (function() {
 
 				// store the switched in target as the current screen
 				current_screen = target;
+
+				if (typeof options.chain_animation_options === 'object') {
+
+					animation_queue = options.chain_animation_options;
+
+				}
 
 				// use higher level command if more specific not set
 				// if higher level command is undefined it will be defaulted later
@@ -450,6 +463,16 @@ var MultiScreen = (function() {
 			// apply post_css on completion and open up the navigation
 			target.css(target_css.post_css);
 			lock_navigation = false;
+
+			// check if there is an object in the queue
+			if (animation_queue !== false) {
+
+				// reset the queue and call the new animation
+				var chain_object = animation_queue;
+				animation_queue = false;
+				switch_screens(chain_object);
+
+			}
 			
 		});
 

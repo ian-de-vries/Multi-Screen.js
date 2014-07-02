@@ -14,7 +14,62 @@
 		<link href="../multi-screen-css.css" type="text/css" rel="stylesheet" />
 		<script type="text/javascript" src="http://code.jquery.com/jquery-latest.pack.js"></script>
 		<script type="text/javascript" src="../multi-screen.js"></script>
-		<script type="text/javascript">$(document).ready(function() { MultiScreen.init(); });</script>
+		<script type="text/javascript">
+
+		$(document).ready(function() { 
+
+			MultiScreen.init(); 
+
+			$('#topleft-via-top').click(function () {
+
+				MultiScreen.switch_screens(
+					{target_id: 'top-screen', enter_animation_command: 'top', exit_animation_command: 'bottom', chain_animation_options: 
+						{target_id: 'topleft-screen', enter_animation_command: 'left', exit_animation_command: 'right'}
+					});
+
+			});
+
+			$('#right-via-bottomright').click(function () {
+
+				MultiScreen.switch_screens(
+					{target_id: 'bottomright-screen', enter_animation_command: 'bottomright', exit_animation_command: 'topleft', chain_animation_options: 
+						{target_id: 'right-screen', enter_animation_command: 'top', exit_animation_command: 'bottom'}
+					});
+
+			});
+
+			$('#go-crazy').click(function () {
+
+				// inception...
+				MultiScreen.switch_screens(
+					{target_id: 'bottomright-screen', enter_animation_command: 'bottomright', exit_animation_command: 'topleft', chain_animation_options: 
+						{target_id: 'right-screen', enter_animation_command: 'top', exit_animation_command: 'bottom',
+							chain_animation_options: 
+							{target_id: 'topright-screen', enter_animation_command: 'top', exit_animation_command: 'bottom',
+								chain_animation_options: 
+								{target_id: 'top-screen', enter_animation_command: 'left', exit_animation_command: 'right',
+									chain_animation_options: 
+									{target_id: 'topleft-screen', enter_animation_command: 'left', exit_animation_command: 'right',
+										chain_animation_options: 
+										{target_id: 'left-screen', enter_animation_command: 'bottom', exit_animation_command: 'top',
+											chain_animation_options: 
+											{target_id: 'bottomleft-screen', enter_animation_command: 'bottom', exit_animation_command: 'top',chain_animation_options: 
+												{target_id: 'bottom-screen', enter_animation_command: 'right', exit_animation_command: 'left',chain_animation_options: 
+													{target_id: 'center-screen', enter_animation_command: 'top', exit_animation_command: 'bottom'}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					});
+
+			});
+
+		});
+
+		</script>
 		<title>Multi-Screen.js demo</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	</head>
@@ -31,6 +86,9 @@
 				<a href="javascript:void(0)" class="ms-nav-link" data-ms-target="topright-screen" data-ms-exit-animation="bottomleft" data-ms-enter-animation="topright">go up and right</a><br/>
 				<a href="javascript:void(0)" class="ms-nav-link" data-ms-target="bottomleft-screen" data-ms-exit-animation="topright" data-ms-enter-animation="bottomleft">go down and left</a><br/>
 				<a href="javascript:void(0)" class="ms-nav-link" data-ms-target="bottomright-screen" data-ms-exit-animation="topleft" data-ms-enter-animation="bottomright">go down and right</a><br/><br/>
+				<a href="javascript:void(0)" id="topleft-via-top">go up, then left</a><br/>
+				<a href="javascript:void(0)" id="right-via-bottomright">go down and right, then up</a><br/>
+				<a href="javascript:void(0)" id="go-crazy">Merry go round!</a><br/><br/>
 				<a href="javascript:MultiScreen.set_default_distance(-1);alert('animation distance between screens removed');">sticky screens</a><br/><br/>
 				<a href="javascript:MultiScreen.set_default_time(2000);alert('animation speed changed to 2000ms')">slow-mo mode</a><br/>
 				<a href="javascript:MultiScreen.set_default_time(200);alert('animation speed changed to 200ms')">speedy mode</a>
