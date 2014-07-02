@@ -66,13 +66,13 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 - `fadetopleft`
 
 ## Navigating within your own JavaScript code
-You can also navigate between screens within your own custom JavaScript code using the switch_screens function:
+You can also navigate between screens within your own custom JavaScript code using the `switch_screens` function:
 
 - `MultiScreen.switch_screens(Object options)` Navigates from the current screen to a target specified in the options;
     - `options` contains the target screen (REQUIRED) and animation commands (OPTIONAL) (see below);
     - Returns `true` if the animation was succesfully started, `false` if not.
 
-To specify the animation you want, the function recognizes the following properties in the options object:
+To specify the animation you want, the function recognizes the following properties in the `options` object:
 
 ``` js
 var options = {	
@@ -88,8 +88,13 @@ var options = {
 	distance:                   // pixels, must be an integer (can be negative)
 	vertical_distance:          // pixels, must be an integer (can be negative), overrides distance
 	horizontal_distance:        // pixels, must be an integer (can be negative), overrides distance
+	chain_animation_options:    // options object for chaining navigations (see below)
 }
 ```
+
+### Chaining animations
+
+The `options` object passed into the `switch_screens` function accepts another `options` object in the `chain_animations_options` property. After the animation finishes, the `switch_screens` function will be called again recursively with this object if specified to allow chained animations. See below for an example.
 
 ### Example manual navigation code
 
@@ -104,6 +109,16 @@ $('#navigate').click(function() {
    
    }
 
+});
+```
+
+When a link with the id `leap-over-center` is clicked, the JavaScript code below will use the default animation settings to navigate to the screen with the id `right-screen` but first pass over the screen with the id `center-screen` first.
+
+``` js
+$('#leap-over-center').click(function() {
+
+   MultiScreen.switch_screens({target_id: 'center-screen', chain_animation_options: {target_id: 'right_screen'}})) {
+   
 });
 ```
 
