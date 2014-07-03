@@ -116,7 +116,7 @@ $('#navigate').click(function() {
 });
 ```
 
-When a link with the id `leap-over-center` is clicked, the JavaScript code below will use the default animation settings to navigate to the screen with the id `right-screen` but first pass over the screen with the id `center-screen` first.
+When a link with the id `leap-over-center` is clicked, the JavaScript code below will use the default animation settings to navigate to the screen with the id `right-screen` but pass over the screen with the id `center-screen` first:
 
 ``` js
 $('#leap-over-center').click(function() {
