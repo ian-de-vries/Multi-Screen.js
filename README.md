@@ -70,11 +70,13 @@ To switch from one screen to another, simply give the class `ms-nav-link` to any
 - `fadetopleft`
 
 ## Navigating within your own JavaScript code
-You can also navigate between screens within your own custom JavaScript code using the `switch_screens` function:
+You can also navigate between screens within your own custom JavaScript code using the `switch_screens` function, or use the `get_current_screen` function to get the `id` of the current screen:
 
 - `MultiScreen.switch_screens(Object options)` Navigates from the current screen to a target specified in the options;
     - `options` contains the target screen (REQUIRED) and animation commands (OPTIONAL) (see below);
     - Returns `true` if the animation was succesfully started, `false` if not.
+- `MultiScreen.get_current_screen()`;
+    - Returns the id of the current screen.
 
 To specify the animation you want, the function recognizes the following properties in the `options` object:
 
