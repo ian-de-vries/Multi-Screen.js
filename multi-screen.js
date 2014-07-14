@@ -1,5 +1,5 @@
 /**
- * Multi-Screen.js v1.2.1
+ * Multi-Screen.js v1.2.2
  * @author Ian de Vries <ian@ian-devries.com>
  * @license MIT License <http://opensource.org/licenses/MIT>
  */
@@ -195,7 +195,7 @@ var MultiScreen = (function() {
 			lock_navigation = true;
 
 			// get references to the target and the current screens
-			var target = get_target_screen(options.target_id),
+			var target = (typeof options === 'object' && typeof options.target_id === 'string') ? get_target_screen(options.target_id) : false,
 				current = current_screen;
 
 			// only do something if the target exists and is not equal to the current screen	
@@ -835,6 +835,17 @@ var MultiScreen = (function() {
 	};
 
 	/**
+	 * get_current_screen() 
+	 * Gets the id of the current screen
+	 * @return {String} id of current screen
+	 */
+	var get_current_screen = function () {
+
+		return current_screen.attr('id');
+
+	};
+
+	/**
 	 * set_default_animation(type, command)
 	 * Sets the default animation for exiting and entering screens
 	 * @param {String} command animation command to set
@@ -1104,6 +1115,7 @@ var MultiScreen = (function() {
 				set_default_delay: set_default_delay,
 				set_default_distance: set_default_distance,
 				set_defaults: set_defaults,
-				switch_screens: switch_screens};
+				switch_screens: switch_screens,
+				get_current_screen: get_current_screen};
 
 })();
